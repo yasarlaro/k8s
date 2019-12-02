@@ -5,3 +5,12 @@
   become: yes
   roles:
     - yasarlaro.k8s-master
+
+- name: Installing and configuring K8s nodes play
+  hosts: node
+  remote_user: oprroot
+  become: yes
+  roles:
+    - yasarlaro.k8s-node
+
+ 

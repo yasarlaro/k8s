@@ -1,2 +1,3 @@
 ---
 # defaults file for yasarlaro.k8s-node
+run_user: oprroot

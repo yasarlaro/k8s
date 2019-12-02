@@ -43,8 +43,28 @@
       - docker-ce-cli
       - containerd.io
     state: present
-  notify:
-    - docker start
+  
+- name: Create docker directory
+  file:
+    path: /etc/docker
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Copy daemon configuration
+  copy: 
+    src: daemon.json
+    dest: /etc/docker/daemon.json
+    mode: 0644
+    owner: root
+    group: root
+
+- name: Create docker system directory
+  file:
+    path: /etc/systemd/system/docker.service.d
+    recurse: true
+    state: directory
 
 - name: "Add {{ run_user }} user to docker group"
   user:
@@ -56,6 +76,7 @@
     name: docker
     enabled: yes
     state: started
+    daemon_reload: yes
 
 - name: Remove swapfile from /etc/fstab
   mount:
@@ -127,7 +148,8 @@
 
 - name: Copy kube configuration for vagrant user
   copy:
-    remote_src: /etc/kubernetes/admin.conf
+    src: /etc/kubernetes/admin.conf
+    remote_src: yes
     dest: "/home/{{ run_user }}/.kube/config"
     mode: 0644
     owner: "{{ run_user }}"
@@ -139,4 +161,14 @@
 
 - name: Generate join command
   shell: 
-    cmd: "kubeadm token create --print-join-command | head -1 > /tmp/join-command"
+    cmd: "kubeadm token create --print-join-command | head -1 > /tmp/kube_join_token"
+
+- name: Fetch the token to localhost
+  fetch:
+    src: /tmp/kube_join_token
+    dest: ./kube_join_token
+
+- name: Remove token file
+  file:
+    path: /tmp/kube_join_token
+    state: absent
