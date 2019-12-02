@@ -146,7 +146,7 @@
     owner: "{{ run_user }}"
     group: "{{ run_user }}"
 
-- name: Copy kube configuration for vagrant user
+- name: "Copy kube configuration for {{ run_user }} user"
   copy:
     src: /etc/kubernetes/admin.conf
     remote_src: yes
