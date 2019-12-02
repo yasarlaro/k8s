@@ -167,6 +167,7 @@
   fetch:
     src: /tmp/kube_join_token
     dest: ./kube_join_token
+    flat: yes
 
 - name: Remove token file
   file:
